@@ -34,9 +34,6 @@ jobs:
       - name: Deploy to Firebase Functions
         run: |
           npm install -g firebase-tools
-          npm install
-          npm run deploy
-        working-directory: ./functions
+          firebase deploy --only functions --project ${{ secrets.FIREBASE_PROJECT_ID }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

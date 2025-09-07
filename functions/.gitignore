@@ -8,3 +8,7 @@ typings/
 # Node.js dependency directory
 node_modules/
 *.local
+
+# Arquivos de variáveis de ambiente locais
+.env
+*.env.local

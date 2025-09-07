@@ -6,11 +6,9 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
     "plugin:import/typescript",
     "google",
-    "plugin:@typescript-eslint/recommended",
+    "prettier", // Adiciona a configuração do Prettier. Deve ser a última.
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -18,16 +16,11 @@ module.exports = {
     sourceType: "module",
   },
   ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
+    "/lib/**/*", // Ignore a pasta de build.
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
+  plugins: ["@typescript-eslint", "import"],
   rules: {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
-    "indent": ["error", 2],
   },
 };

@@ -33,3 +33,12 @@ jobs:
       - name: Build TypeScript
         run: npm run build
         working-directory: ./functions
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: functions-artifact
+          path: |
+            functions
+            firebase.json
+            .firebaserc

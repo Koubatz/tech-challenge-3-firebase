@@ -13,9 +13,6 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\""
   },
-  "engines": {
-    "node": "22"
-  },
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^12.7.0",

@@ -45,9 +45,7 @@ jobs:
         working-directory: ./functions
 
       - name: Deploy to Firebase Functions
-        uses: FirebaseExtended/action-cli@v0
-        with:
-          args: deploy --only functions
+        run: npm run deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

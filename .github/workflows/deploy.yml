@@ -29,11 +29,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'functions/package.json'
+          cache: 'npm'
+          cache-dependency-path: 'functions/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./functions
+
+      - name: Build TypeScript
+        run: npm run build
+        working-directory: ./functions
+
       - name: Deploy to Firebase Functions
-        uses: w9jds/firebase-action@v2.1.5
+        uses: FirebaseExtended/action-cli@v0
         with:
           args: deploy --only functions
         env:
-          # Estes segredos precisam ser configurados no seu repositório do GitHub
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

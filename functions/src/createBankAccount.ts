@@ -1,6 +1,6 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { CreateAccountData, CreateAccountResponse } from "./types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { CreateAccountData, CreateAccountResponse } from './types';
 
 /**
  * Função Cloud Function para criar uma nova conta bancária.
@@ -22,23 +22,23 @@ export const createBankAccount = onCall(async (request) => {
   // Se request.auth for nulo, o usuário não está autenticado.
   if (!request.auth) {
     throw new HttpsError(
-      "unauthenticated",
-      "A função deve ser chamada por um usuário autenticado.",
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
     );
   }
 
   // 2. Validação dos dados de entrada.
   if (!data.ownerName) {
     throw new HttpsError(
-      "invalid-argument",
-      "A função deve ser chamada com o seguinte argumento: 'ownerName'.",
+      'invalid-argument',
+      'A função deve ser chamada com o seguinte argumento: \'ownerName\'.',
     );
   }
 
   try {
     // 3. Obter o próximo número da conta de forma atômica usando uma transação.
     const db = getFirestore();
-    const counterRef = db.collection("counters").doc("bank-account-counter");
+    const counterRef = db.collection('counters').doc('bank-account-counter');
     const newNumber = await db.runTransaction(async (transaction) => {
       const counterDoc = await transaction.get(counterRef);
       const currentNumber = counterDoc.data()?.currentNumber || 0;
@@ -48,7 +48,7 @@ export const createBankAccount = onCall(async (request) => {
     });
 
     // 4. Formatar o número da conta com preenchimento e dígito verificador.
-    const baseNumberStr = String(newNumber).padStart(6, "0");
+    const baseNumberStr = String(newNumber).padStart(6, '0');
     const checkDigit = calculateCheckDigit(baseNumberStr);
     const fullAccountNumber = `${baseNumberStr}-${checkDigit}`;
 
@@ -57,9 +57,9 @@ export const createBankAccount = onCall(async (request) => {
     const balanceInCents = 0;
 
     // 5. Criar o novo documento da conta bancária.
-    const writeResult = await db.collection("bank-accounts").add({
+    const writeResult = await db.collection('bank-accounts').add({
       accountNumber: fullAccountNumber,
-      agency: "0001", // Agência fixa para o banco virtual.
+      agency: '0001', // Agência fixa para o banco virtual.
       balanceInCents: balanceInCents,
       ownerName: data.ownerName,
       createdAt: new Date().toISOString(),
@@ -79,23 +79,18 @@ export const createBankAccount = onCall(async (request) => {
 
     return response;
   } catch (error) {
-    console.error("Erro ao criar conta bancária:", error);
-    throw new HttpsError("internal", "Ocorreu um erro interno ao criar a conta bancária.");
+    console.error('Erro ao criar conta bancária:', error);
+    throw new HttpsError('internal', 'Ocorreu um erro interno ao criar a conta bancária.');
   }
 });
 
-/**
- * Calcula o dígito verificador de um número usando o algoritmo Módulo 11.
- * @param baseNumber O número base como uma string.
- * @returns O dígito verificador como uma string.
- */
 function calculateCheckDigit(baseNumber: string): string {
   const sum = multipleDigitsPerWeight(baseNumber);
   const validatorDigit = sumPerModule11(sum);
 
   // Se o resultado for 10 ou 11, o dígito verificador é 0.
   if (validatorDigit === 10 || validatorDigit >= 10) {
-    return "0";
+    return '0';
   }
 
   return String(validatorDigit);

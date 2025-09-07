@@ -1,4 +1,4 @@
-import { TransactionType } from "./perform-transaction";
+import { TransactionType } from './perform-transaction';
 
 export interface GetAccountStatementData {
   accountNumber: string;

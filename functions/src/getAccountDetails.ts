@@ -1,6 +1,6 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { GetAccountDetailsData, GetAccountDetailsResponse } from "./types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { GetAccountDetailsData, GetAccountDetailsResponse } from './types';
 
 /**
  * Busca os detalhes de uma conta bancária, incluindo o saldo.
@@ -20,26 +20,26 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
   // Verificação de Autenticação
   if (!request.auth) {
     throw new HttpsError(
-      "unauthenticated",
-      "A função deve ser chamada por um usuário autenticado.",
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
     );
   }
 
   // 1. Validação dos dados de entrada.
   if (!data.accountNumber) {
-    throw new HttpsError("invalid-argument", "A função deve ser chamada com 'accountNumber'.");
+    throw new HttpsError('invalid-argument', 'A função deve ser chamada com \'accountNumber\'.');
   }
 
   const db = getFirestore();
 
   try {
     // 2. Encontrar a conta bancária pelo número da conta.
-    const accountsRef = db.collection("bank-accounts");
-    const query = accountsRef.where("accountNumber", "==", data.accountNumber).limit(1);
+    const accountsRef = db.collection('bank-accounts');
+    const query = accountsRef.where('accountNumber', '==', data.accountNumber).limit(1);
     const snapshot = await query.get();
 
     if (snapshot.empty) {
-      throw new HttpsError("not-found", `A conta ${data.accountNumber} não foi encontrada.`);
+      throw new HttpsError('not-found', `A conta ${data.accountNumber} não foi encontrada.`);
     }
 
     const accountDoc = snapshot.docs[0];
@@ -60,10 +60,10 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
     console.log(`Consulta para a conta ${data.accountNumber} realizada com sucesso.`);
     return response;
   } catch (error) {
-    console.error("Erro ao buscar detalhes da conta:", error);
+    console.error('Erro ao buscar detalhes da conta:', error);
     if (error instanceof HttpsError) {
       throw error;
     }
-    throw new HttpsError("internal", "Ocorreu um erro interno ao buscar os detalhes da conta.");
+    throw new HttpsError('internal', 'Ocorreu um erro interno ao buscar os detalhes da conta.');
   }
 });

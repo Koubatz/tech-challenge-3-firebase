@@ -1,42 +1,33 @@
-import { onCall, CallableRequest } from "firebase-functions/v2/https";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
 
 /**
- * Função de verificação de integridade (health check).
- * Esta função tenta escrever um documento simples no Firestore
- * para garantir que a conexão com o banco de dados está funcionando.
- * A função é acionada via HTTPS e não espera parâmetros.
+ * Função de verificação de integridade (health check) para usuários autenticados.
  *
- * A função retorna um objeto com os seguintes campos em caso de sucesso:
- * - success: boolean
- * - docId: string (ID do documento criado no Firestore)
+ * Esta função verifica a conectividade com o Firestore escrevendo um
+ * documento na coleção 'health-checks'. Requer que o usuário esteja autenticado.
  *
- * Em caso de falha, retorna:
- * - success: boolean
- * - error: string (mensagem de erro genérica)
+ * @returns Uma promessa que resolve com um objeto contendo o status de sucesso
+ *   e o ID do documento criado.
+ * @throws {HttpsError} Lança um erro com código 'unauthenticated' se o usuário
+ *   não estiver logado, ou 'internal' para outras falhas de banco de dados.
  */
-export const healthCheck = onCall(async (request: CallableRequest<unknown>) => {
-  try {
-    // Get a reference to the Firestore database.
-    const db = getFirestore();
-
-    // Add a new document with a server-generated timestamp
-    // to the 'health-checks' collection.
-    const writeResult = await db.collection("health-checks").add({
-      timestamp: FieldValue.serverTimestamp(),
-      // Optional: include user info if the function
-      // is called by an authenticated user.
-      uid: request.auth ? request.auth.uid : "anonymous",
-    });
-
-    const docId = writeResult.id;
-    console.log(`Successfully wrote to Firestore with doc ID: ${docId}`);
-
-    // Return a success response with the new document's ID.
-    return { success: true, docId };
-  } catch (error) {
-    // It's good practice to not expose detailed internal errors to the client.
-    // The detailed error will be available in your Firebase Function logs.
-    return { success: false, error: "An internal error occurred." };
+export const healthCheck = onCall(async (request) => {
+  // Garante que o usuário está autenticado.
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'A função requer autenticação.');
   }
+
+  const db = getFirestore();
+
+  // Adiciona um novo documento com o UID do usuário e um timestamp.
+  const writeResult = await db.collection('health-checks').add({
+    uid: request.auth.uid,
+    timestamp: FieldValue.serverTimestamp(),
+  });
+
+  console.log(`Health check bem-sucedido para o usuário ${request.auth.uid}. Doc ID: ${writeResult.id}`);
+
+  // Retorna sucesso. Erros internos são capturados automaticamente pelo Firebase.
+  return { success: true, docId: writeResult.id };
 });

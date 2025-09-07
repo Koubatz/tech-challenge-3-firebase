@@ -1,4 +1,11 @@
 {
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Permite que o TypeScript processe arquivos JavaScript.
+    "allowJs": true,
+    // Não gera arquivos de saída, apenas verifica os tipos.
+    "noEmit": true
+  },
   "include": [
     ".eslintrc.js"
   ]

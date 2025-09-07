@@ -1,6 +1,6 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { GetAccountStatementData, GetAccountStatementResponse, Transaction } from "./types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { GetAccountStatementData, GetAccountStatementResponse, Transaction } from './types';
 
 /**
  * Busca o extrato (histórico de transações) de uma conta bancária.
@@ -17,24 +17,24 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
   // Verificação de Autenticação
   if (!request.auth) {
     throw new HttpsError(
-      "unauthenticated",
-      "A função deve ser chamada por um usuário autenticado.",
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
     );
   }
 
   // 1. Validação dos dados de entrada.
   if (!data.accountNumber) {
-    throw new HttpsError("invalid-argument", "A função deve ser chamada com 'accountNumber'.");
+    throw new HttpsError('invalid-argument', 'A função deve ser chamada com \'accountNumber\'.');
   }
 
   const db = getFirestore();
 
   try {
     // 2. Buscar as transações para o número da conta, ordenadas por data.
-    const transactionsRef = db.collection("transactions");
+    const transactionsRef = db.collection('transactions');
     const query = transactionsRef
-      .where("accountNumber", "==", data.accountNumber)
-      .orderBy("timestamp", "desc"); // Mais recentes primeiro
+      .where('accountNumber', '==', data.accountNumber)
+      .orderBy('timestamp', 'desc'); // Mais recentes primeiro
 
     const snapshot = await query.get();
 
@@ -66,10 +66,10 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
       transactions: transactions,
     };
   } catch (error) {
-    console.error("Erro ao buscar extrato da conta:", error);
+    console.error('Erro ao buscar extrato da conta:', error);
     if (error instanceof HttpsError) {
       throw error;
     }
-    throw new HttpsError("internal", "Ocorreu um erro interno ao buscar o extrato da conta.");
+    throw new HttpsError('internal', 'Ocorreu um erro interno ao buscar o extrato da conta.');
   }
 });

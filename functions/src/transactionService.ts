@@ -1,5 +1,6 @@
-import { FieldValue, Firestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import { FieldValue, Firestore } from 'firebase-admin/firestore';
+import { HttpsError } from 'firebase-functions/v2/https';
+import { TransactionType } from './types';
 
 /**
  * Detalhes necessários para executar uma transação.
@@ -7,7 +8,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 export interface TransactionDetails {
   accountNumber: string;
   amountInCents: number;
-  type: "DEPOSIT" | "WITHDRAWAL";
+  type: TransactionType;
   uid: string;
 }
 
@@ -15,20 +16,20 @@ export interface TransactionDetails {
  * Executa uma transação de depósito ou saque de forma atômica no Firestore.
  * @param db A instância do Firestore.
  * @param details Os detalhes da transação a ser executada.
- * @returns Um objeto com o ID da transação e o novo saldo.
+ * @return Um objeto com o ID da transação e o novo saldo.
  */
 export async function executeTransaction(db: Firestore, details: TransactionDetails) {
   const { accountNumber, amountInCents, type, uid } = details;
-  const transactionRef = db.collection("transactions").doc();
+  const transactionRef = db.collection('transactions').doc();
 
   const newBalance = await db.runTransaction(async (t) => {
     // 1. Encontrar a conta bancária pelo número da conta.
-    const accountsRef = db.collection("bank-accounts");
-    const query = accountsRef.where("accountNumber", "==", accountNumber).limit(1);
+    const accountsRef = db.collection('bank-accounts');
+    const query = accountsRef.where('accountNumber', '==', accountNumber).limit(1);
     const snapshot = await t.get(query);
 
     if (snapshot.empty) {
-      throw new HttpsError("not-found", `A conta ${accountNumber} não foi encontrada.`);
+      throw new HttpsError('not-found', `A conta ${accountNumber} não foi encontrada.`);
     }
 
     const accountDoc = snapshot.docs[0];
@@ -37,12 +38,12 @@ export async function executeTransaction(db: Firestore, details: TransactionDeta
     let newBalanceInCents: number;
 
     // 2. Calcular novo saldo e verificar fundos para saque.
-    if (type === "DEPOSIT") {
+    if (type === TransactionType.DEPOSIT) {
       newBalanceInCents = currentBalanceInCents + amountInCents;
     } else {
       // WITHDRAWAL
       if (currentBalanceInCents < amountInCents) {
-        throw new HttpsError("failed-precondition", "Saldo insuficiente para realizar o saque.");
+        throw new HttpsError('failed-precondition', 'Saldo insuficiente para realizar o saque.');
       }
       newBalanceInCents = currentBalanceInCents - amountInCents;
     }

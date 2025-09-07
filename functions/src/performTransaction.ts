@@ -1,7 +1,7 @@
-import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { executeTransaction } from "./transactionService";
-import { PerformTransactionData, PerformTransactionResponse } from "./types";
+import { getFirestore } from 'firebase-admin/firestore';
+import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { executeTransaction } from './transactionService';
+import { PerformTransactionData, PerformTransactionResponse, TransactionType } from './types';
 
 /**
  * Realiza uma transação (depósito ou saque) em uma conta bancária.
@@ -19,8 +19,8 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
   // 1. Verificação de Autenticação.
   if (!request.auth) {
     throw new HttpsError(
-      "unauthenticated",
-      "A função deve ser chamada por um usuário autenticado.",
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
     );
   }
 
@@ -29,19 +29,19 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
   // 2. Validação dos dados de entrada.
   if (!data.accountNumber || data.amount == null || !data.type) {
     throw new HttpsError(
-      "invalid-argument",
-      "A função deve ser chamada com 'accountNumber', 'amount' e 'type'.",
+      'invalid-argument',
+      'A função deve ser chamada com \'accountNumber\', \'amount\' e \'type\'.',
     );
   }
 
-  if (typeof data.amount !== "number" || data.amount <= 0) {
-    throw new HttpsError("invalid-argument", "O valor ('amount') deve ser um número positivo.");
+  if (typeof data.amount !== 'number' || data.amount <= 0) {
+    throw new HttpsError('invalid-argument', 'O valor (\'amount\') deve ser um número positivo.');
   }
 
-  if (data.type !== "DEPOSIT" && data.type !== "WITHDRAWAL") {
+  if (data.type !== TransactionType.DEPOSIT && data.type !== TransactionType.WITHDRAWAL) {
     throw new HttpsError(
-      "invalid-argument",
-      "O tipo ('type') da transação deve ser 'DEPOSIT' ou 'WITHDRAWAL'.",
+      'invalid-argument',
+      'O tipo (\'type\') da transação deve ser \'DEPOSIT\' ou \'WITHDRAWAL\'.',
     );
   }
 
@@ -71,6 +71,6 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
     if (error instanceof HttpsError) {
       throw error;
     }
-    throw new HttpsError("internal", "Ocorreu um erro interno ao processar a transação.");
+    throw new HttpsError('internal', 'Ocorreu um erro interno ao processar a transação.');
   }
 });

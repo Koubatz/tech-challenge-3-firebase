@@ -1,10 +1,10 @@
-import { initializeApp } from "firebase-admin/app";
-import { setGlobalOptions } from "firebase-functions";
-import { healthCheck } from "./healthCheck";
-import { createBankAccount } from "./createBankAccount";
-import { getAccountDetails } from "./getAccountDetails";
-import { getAccountStatement } from "./getAccountStatement";
-import { performTransaction } from "./performTransaction";
+import { initializeApp } from 'firebase-admin/app';
+import { setGlobalOptions } from 'firebase-functions';
+import { createBankAccount } from './createBankAccount';
+import { getAccountDetails } from './getAccountDetails';
+import { getAccountStatement } from './getAccountStatement';
+import { healthCheck } from './healthCheck';
+import { performTransaction } from './performTransaction';
 
 setGlobalOptions({ maxInstances: 10 });
 

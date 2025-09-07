@@ -1,0 +1,35 @@
+name: Reusable Build and Test
+
+# A diretiva 'workflow_call' torna este workflow chamável por outros workflows.
+on:
+  workflow_call:
+
+jobs:
+  # Este é o job que será executado quando o workflow for chamado.
+  # O nome do job ('build_and_test') é importante, pois os outros workflows
+  # dependerão dele através da diretiva 'needs'.
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'functions/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./functions
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: ./functions
+
+      - name: Build TypeScript
+        run: npm run build
+        working-directory: ./functions

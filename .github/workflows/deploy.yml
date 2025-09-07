@@ -1,0 +1,39 @@
+name: Deploy to Firebase Functions
+
+# Este workflow é acionado em duas situações:
+# 1. Quando um 'push' é feito na branch 'main' (geralmente após um merge de PR).
+# 2. Quando um Pull Request é aberto ou atualizado para a branch 'main'.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    # Chama o workflow reutilizável.
+    uses: ./.github/workflows/reusable-build-test.yml
+
+  # Segundo Job: Fazer o Deploy para o Firebase
+  deploy:
+    name: Deploy to Firebase
+    # Este job só executa se o job 'build_and_test' for concluído com sucesso
+    # E somente se o evento for um push para a branch 'main'.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build_and_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Firebase Functions
+        uses: w9jds/firebase-action@v2.1.5
+        with:
+          args: deploy --only functions
+        env:
+          # Estes segredos precisam ser configurados no seu repositório do GitHub
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+		"name": "Firebase Local - Tech Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth - Sign In Test User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Salva o token de ID e o token de atualização em variáveis de coleção",
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.idToken) {",
+							"        pm.collectionVariables.set(\"authToken\", response.idToken);",
+							"        console.log(\"Auth Token salvo com sucesso.\");",
+							"    }",
+							"    if (response.refreshToken) {",
+							"        pm.collectionVariables.set(\"refreshToken\", response.refreshToken);",
+							"        console.log(\"Refresh Token salvo com sucesso.\");",
+							"    }",
+							"} else {",
+							"    console.error(\"Falha no login:\", pm.response.text());",
+							"    pm.collectionVariables.unset(\"authToken\");",
+							"    pm.collectionVariables.unset(\"refreshToken\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"{{testPassword}}\",\n    \"returnSecureToken\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{apiKey}}",
+					"protocol": "https",
+					"host": [
+						"identitytoolkit",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1",
+						"accounts:signInWithPassword"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						}
+					]
+				},
+				"description": "Autentica um usuário de teste usando a API REST do Firebase Authentication para obter um Token de ID. Você precisa preencher as variáveis de coleção `apiKey`, `testEmail` e `testPassword`."
+			},
+			"response": []
+		},
+		{
+			"name": "Auth - Refresh Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Salva o novo token de ID em uma variável de coleção",
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    // A API de refresh retorna a chave como 'id_token'",
+							"    if (response.id_token) {",
+							"        pm.collectionVariables.set(\"authToken\", response.id_token);",
+							"        console.log(\"Auth Token atualizado com sucesso via refresh.\");",
+							"    }",
+							"    // Opcional: A API pode retornar um novo refresh token, atualize-o se presente",
+							"    if (response.refresh_token) {",
+							"        pm.collectionVariables.set(\"refreshToken\", response.refresh_token);",
+							"        console.log(\"Refresh Token também foi atualizado.\");",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"grant_type\": \"refresh_token\",\n    \"refresh_token\": \"{{refreshToken}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://securetoken.googleapis.com/v1/token?key={{apiKey}}",
+					"protocol": "https",
+					"host": [
+						"securetoken",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1",
+						"token"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						}
+					]
+				},
+				"description": "Usa o `refreshToken` para obter um novo `authToken` (ID Token) sem precisar fazer login novamente. O `authToken` expira em 1 hora, então esta requisição é útil para continuar testando por mais tempo."
+			},
+			"response": []
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/healthCheck",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"healthCheck"
+					]
+				},
+				"description": "Testa a função chamável `healthCheck` no emulador local. Esta função escreve um documento na coleção 'health-checks' do Firestore para verificar a conectividade."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Bank Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Salva o número da conta gerado em uma variável de coleção",
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.result && response.result.accountNumber) {",
+							"        pm.collectionVariables.set(\"accountNumber\", response.result.accountNumber);",
+							"        console.log(`Número da conta salvo: ${response.result.accountNumber}`);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"ownerName\": \"Jane Doe\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/createBankAccount",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"createBankAccount"
+					]
+				},
+				"description": "Cria uma nova conta bancária no Firestore com número de conta gerado automaticamente."
+			},
+			"response": []
+		},
+		{
+			"name": "Perform Transaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"accountNumber\": \"{{accountNumber}}\",\n        \"amount\": 100.50,\n        \"type\": \"DEPOSIT\" // Pode ser \"DEPOSIT\" ou \"WITHDRAWAL\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/performTransaction",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"performTransaction"
+					]
+				},
+				"description": "Realiza uma transação (depósito ou saque) em uma conta bancária, diferenciando a operação pelo campo 'type'."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account Details",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"accountNumber\": \"{{accountNumber}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountDetails",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"getAccountDetails"
+					]
+				},
+				"description": "Busca os detalhes de uma conta bancária, incluindo o saldo."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account Statement",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"accountNumber\": \"{{accountNumber}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountStatement",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"getAccountStatement"
+					]
+				},
+				"description": "Busca o extrato (histórico de transações) de uma conta bancária."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "accountNumber",
+			"value": "000001-5",
+			"type": "string",
+			"description": "Armazena o número da conta criado pela requisição 'Create Bank Account' para ser usado nas outras requisições."
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string",
+			"description": "Armazena o Token de ID do Firebase obtido na requisição de autenticação."
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string",
+			"description": "Armazena o Refresh Token do Firebase obtido na requisição de autenticação para renovar o ID Token."
+		},
+		{
+			"key": "apiKey",
+			"value": "",
+			"type": "string",
+			"description": "A chave de API do seu projeto Firebase. Encontre em: Configurações do Projeto -> Geral -> Seus apps -> App da Web -> Configuração."
+		},
+		{
+			"key": "testEmail",
+			"value": "",
+			"type": "string",
+			"description": "O e-mail do seu usuário de teste criado no Firebase Authentication."
+		},
+		{
+			"key": "testPassword",
+			"value": "",
+			"type": "string",
+			"description": "A senha do seu usuário de teste."
+		}
+	]
+}

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to Firebase Functions",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "resolveSourceMapLocations": ["${workspaceFolder}/functions/lib/**", "!**/node_modules/**"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+} 

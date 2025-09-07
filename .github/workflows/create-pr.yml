@@ -1,0 +1,37 @@
+name: Create Feature Pull Request
+
+# Este workflow é acionado sempre que uma nova branch com o prefixo 'feature/'
+# é enviada (push) para o repositório.
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+jobs:
+  build_and_test:
+    # Chama o workflow reutilizável.
+    uses: ./.github/workflows/reusable-build-test.yml
+
+  # Job 2: Cria o Pull Request automaticamente após o sucesso do build_and_test.
+  create_pull_request:
+    name: Create Pull Request
+    # Este job só executa se o job 'build_and_test' for concluído com sucesso.
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Pull Request to main
+        uses: thomaseizinger/create-pull-request@v1
+        with:
+          # O GITHUB_TOKEN é gerado automaticamente pelo GitHub Actions
+          # e tem as permissões necessárias para criar um PR.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          head_branch: ${{ github.ref_name }}
+          base_branch: main
+          title: "feat: ${{ github.ref_name }}"
+          body: |
+            Este é um Pull Request gerado automaticamente para a branch `${{ github.ref_name }}`.
+
+            **Por favor, revise as alterações e adicione uma descrição mais detalhada do que foi implementado.**
+          # Atribui o PR e solicita a revisão da pessoa que enviou a branch.
+          reviewers: ${{ github.actor }}
+          assignees: ${{ github.actor }}

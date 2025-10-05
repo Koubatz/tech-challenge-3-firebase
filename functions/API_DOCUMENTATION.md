@@ -408,3 +408,71 @@ Busca o histórico de transações de uma conta bancária.
 | `amount`     | `number` | Valor da transação em formato decimal.              |
 | `timestamp`  | `string` | Data e hora da transação em formato ISO 8601.       |
 | `newBalance` | `number` | Saldo da conta *após* esta transação.               |
+
+---
+
+##### **6. Obter Transações do Ano Agrupadas por Mês**
+
+Retorna todas as transações realizadas pelo usuário autenticado em um ano específico, agrupadas por mês.
+
+*   **Nome da Função:** `getYearlyTransactions`
+*   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getYearlyTransactions`
+*   **Descrição:** Lista as transações da conta vinculada ao usuário para um ano informado (ou o ano atual, se omitido) e organiza os resultados por mês.
+
+**Requisição (`data`):**
+
+| Parâmetro        | Tipo     | Obrigatório | Descrição                                                                                 |
+| :--------------- | :------- | :---------- | :---------------------------------------------------------------------------------------- |
+| `year`           | `number` | Não         | Ano desejado (por exemplo, `2024`). Se omitido, o ano corrente em UTC é utilizado.        |
+| `accountNumber`  | `string` | Não         | Número da conta a consultar. Se informado, deve corresponder à conta do usuário logado.   |
+
+**Exemplo de Requisição:**
+
+```json
+{
+  "data": {
+    "year": 2024
+  }
+}
+```
+
+**Resposta de Sucesso (200 OK):**
+
+```json
+{
+  "result": {
+    "success": true,
+    "year": 2024,
+    "months": [
+      {
+        "month": 1,
+        "transactions": [
+          {
+            "id": "abc123",
+            "type": "DEPOSIT",
+            "amount": 150.75,
+            "timestamp": "2024-01-05T12:01:00.000Z",
+            "newBalance": 2100.50
+          }
+        ]
+      },
+      {
+        "month": 2,
+        "transactions": []
+      }
+    ]
+  }
+}
+```
+
+| Campo      | Tipo              | Descrição                                                                                     |
+| :--------- | :---------------- | :-------------------------------------------------------------------------------------------- |
+| `success`  | `boolean`         | `true` quando a consulta estiver concluída com êxito.                                         |
+| `year`     | `number`          | Ano utilizado para a consulta.                                                                |
+| `months`   | `Array<Object>`   | Lista ordenada por mês (1 a 12). Cada item contém o mês e o array de transações desse período. |
+
+**Observações:**
+
+*   Apenas a conta vinculada ao usuário autenticado pode ser consultada.
+*   Meses sem transações retornam com o array `transactions` vazio.
+*   É necessário possuir um índice composto no Firestore para `transactions` combinando `accountNumber` e `timestamp`.

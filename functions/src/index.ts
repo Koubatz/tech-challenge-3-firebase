@@ -3,6 +3,7 @@ import { setGlobalOptions } from 'firebase-functions';
 import { createBankAccount } from './createBankAccount';
 import { getAccountDetails } from './getAccountDetails';
 import { getAccountStatement } from './getAccountStatement';
+import { getYearlyTransactions } from './getYearlyTransactions';
 import { healthCheck } from './healthCheck';
 import { performTransaction } from './performTransaction';
 
@@ -16,4 +17,5 @@ exports.healthCheck = healthCheck;
 exports.createBankAccount = createBankAccount;
 exports.getAccountDetails = getAccountDetails;
 exports.getAccountStatement = getAccountStatement;
+exports.getYearlyTransactions = getYearlyTransactions;
 exports.performTransaction = performTransaction;

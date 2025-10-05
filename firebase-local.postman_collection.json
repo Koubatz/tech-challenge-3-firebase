@@ -365,6 +365,51 @@
 					},
 					"description": "Busca o extrato (histórico de transações) da conta vinculada ao usuário autenticado."
 			},
+		"response": []
+		},
+		{
+			"name": "Get Yearly Transactions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"year\": 2024\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getYearlyTransactions",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"getYearlyTransactions"
+					]
+				},
+				"description": "Busca todas as transações do usuário autenticado para um ano específico e agrupa os resultados por mês."
+			},
 			"response": []
 		}
 	],

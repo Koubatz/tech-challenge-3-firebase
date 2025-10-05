@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
-		"name": "Firebase Local - Tech Challenge",
+		"name": "Firebase Production - Tech Challenge",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -149,23 +149,19 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/healthCheck",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5001",
-					"path": [
-						"fiap-tech-challenge-3-bytebank",
-						"us-central1",
-						"healthCheck"
-					]
-				},
-				"description": "Testa a função chamável `healthCheck` no emulador local. Esta função escreve um documento na coleção 'health-checks' do Firestore para verificar a conectividade."
+					"url": {
+						"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/healthCheck",
+						"protocol": "https",
+						"host": [
+							"{{region}}-{{projectId}}",
+							"cloudfunctions",
+							"net"
+						],
+						"path": [
+							"healthCheck"
+						]
+					},
+					"description": "Testa a função chamável `healthCheck` em produção. Esta função escreve um documento na coleção 'health-checks' do Firestore para verificar a conectividade."
 			},
 			"response": []
 		},
@@ -212,23 +208,19 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/createBankAccount",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5001",
-					"path": [
-						"fiap-tech-challenge-3-bytebank",
-						"us-central1",
-						"createBankAccount"
-					]
-				},
-				"description": "Cria uma nova conta bancária no Firestore com número de conta gerado automaticamente."
+					"url": {
+						"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/createBankAccount",
+						"protocol": "https",
+						"host": [
+							"{{region}}-{{projectId}}",
+							"cloudfunctions",
+							"net"
+						],
+						"path": [
+							"createBankAccount"
+						]
+					},
+					"description": "Cria uma nova conta bancária no Firestore de produção com número de conta gerado automaticamente."
 			},
 			"response": []
 		},
@@ -257,23 +249,19 @@
 							}
 						}
 					},
-				"url": {
-					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/performTransaction",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5001",
-					"path": [
-						"fiap-tech-challenge-3-bytebank",
-						"us-central1",
-						"performTransaction"
-					]
-				},
-					"description": "Realiza uma transação (depósito ou saque) na conta vinculada ao usuário autenticado, diferenciando a operação pelo campo 'type'."
+					"url": {
+						"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/performTransaction",
+						"protocol": "https",
+						"host": [
+							"{{region}}-{{projectId}}",
+							"cloudfunctions",
+							"net"
+						],
+						"path": [
+							"performTransaction"
+						]
+					},
+					"description": "Realiza uma transação (depósito ou saque) na conta vinculada ao usuário autenticado em produção, diferenciando a operação pelo campo 'type'."
 			},
 			"response": []
 		},
@@ -302,23 +290,19 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountDetails",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5001",
-					"path": [
-						"fiap-tech-challenge-3-bytebank",
-						"us-central1",
-						"getAccountDetails"
-					]
-				},
-				"description": "Busca os detalhes de uma conta bancária, incluindo o saldo."
+					"url": {
+						"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/getAccountDetails",
+						"protocol": "https",
+						"host": [
+							"{{region}}-{{projectId}}",
+							"cloudfunctions",
+							"net"
+						],
+						"path": [
+							"getAccountDetails"
+						]
+					},
+					"description": "Busca os detalhes da conta vinculada ao usuário autenticado em produção, incluindo o saldo."
 			},
 			"response": []
 		},
@@ -347,37 +331,45 @@
 							}
 						}
 					},
-				"url": {
-					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountStatement",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "5001",
-					"path": [
-						"fiap-tech-challenge-3-bytebank",
-						"us-central1",
-						"getAccountStatement"
-					]
+					"url": {
+						"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/getAccountStatement",
+						"protocol": "https",
+						"host": [
+							"{{region}}-{{projectId}}",
+							"cloudfunctions",
+							"net"
+						],
+						"path": [
+							"getAccountStatement"
+						]
 					},
-					"description": "Busca o extrato (histórico de transações) da conta vinculada ao usuário autenticado."
+					"description": "Busca o extrato (histórico de transações) da conta do usuário autenticado em produção."
 			},
 			"response": []
 		}
 	],
-	"variable": [
-		{
-			"key": "accountNumber",
-			"value": "000001-5",
-			"type": "string",
-			"description": "Armazena o número da conta criado pela requisição 'Create Bank Account' para ser usado nas outras requisições."
-		},
-		{
-			"key": "authToken",
-			"value": "",
+		"variable": [
+			{
+				"key": "accountNumber",
+				"value": "000001-5",
+				"type": "string",
+				"description": "Armazena o número da conta criado pela requisição 'Create Bank Account' para ser usado nas outras requisições."
+			},
+			{
+				"key": "projectId",
+				"value": "fiap-tech-challenge-3-bytebank",
+				"type": "string",
+				"description": "Identificador do projeto Firebase usado nas URLs de produção."
+			},
+			{
+				"key": "region",
+				"value": "us-central1",
+				"type": "string",
+				"description": "Região onde as Cloud Functions estão implantadas."
+			},
+			{
+				"key": "authToken",
+				"value": "",
 			"type": "string",
 			"description": "Armazena o Token de ID do Firebase obtido na requisição de autenticação."
 		},

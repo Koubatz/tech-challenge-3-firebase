@@ -93,6 +93,7 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
         // O timestamp do Firestore precisa ser convertido para uma string ISO.
         timestamp: docData.timestamp.toDate().toISOString(),
         newBalance: (docData.newBalanceInCents || 0) / 100,
+        category: docData.category ?? null,
       };
     });
 

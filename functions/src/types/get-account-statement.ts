@@ -12,6 +12,7 @@ export interface Transaction {
   amount: number;
   timestamp: string;
   newBalance: number;
+  category?: string | null;
 }
 
 export interface GetAccountStatementResponse {

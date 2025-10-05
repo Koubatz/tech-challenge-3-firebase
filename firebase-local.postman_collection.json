@@ -250,7 +250,7 @@
 				],
 					"body": {
 						"mode": "raw",
-						"raw": "{\n    \"data\": {\n        \"amount\": 100.50,\n        \"type\": \"DEPOSIT\" // Pode ser \"DEPOSIT\" ou \"WITHDRAWAL\"\n    }\n}",
+				"raw": "{\n    \"data\": {\n        \"amount\": 100.50,\n        \"type\": \"DEPOSIT\", // Pode ser \"DEPOSIT\" ou \"WITHDRAWAL\"\n        \"timestamp\": \"2024-03-15T14:30:00.000Z\",\n        \"category\": \"Salário\"\n    }\n}",
 						"options": {
 							"raw": {
 								"language": "json"

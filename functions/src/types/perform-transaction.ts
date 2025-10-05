@@ -6,6 +6,8 @@ export enum TransactionType {
 export interface PerformTransactionData {
   amount: number;
   type: TransactionType;
+  timestamp?: string | number;
+  category?: string;
 }
 
 export interface PerformTransactionResponse {

@@ -46,6 +46,44 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
     );
   }
 
+  let customTimestamp: Date | undefined;
+  if (data.timestamp != null) {
+    if (typeof data.timestamp !== 'string' && typeof data.timestamp !== 'number') {
+      throw new HttpsError(
+        'invalid-argument',
+        'O campo opcional timestamp deve ser uma string ISO 8601 ou um número representando a data.',
+      );
+    }
+
+    const parsedTimestamp = new Date(data.timestamp);
+    if (Number.isNaN(parsedTimestamp.getTime())) {
+      throw new HttpsError(
+        'invalid-argument',
+        'Não foi possível interpretar o valor informado em timestamp.',
+      );
+    }
+
+    customTimestamp = parsedTimestamp;
+  }
+
+  let category: string | undefined;
+  if (payload.category != null) {
+    if (typeof payload.category !== 'string') {
+      throw new HttpsError('invalid-argument', 'O campo opcional category deve ser uma string.');
+    }
+    const trimmedCategory = payload.category.trim();
+    if (trimmedCategory.length === 0) {
+      throw new HttpsError('invalid-argument', 'O campo category não pode ser vazio.');
+    }
+    if (trimmedCategory.length > 100) {
+      throw new HttpsError(
+        'invalid-argument',
+        'O campo category deve ter no máximo 100 caracteres.',
+      );
+    }
+    category = trimmedCategory;
+  }
+
   const db = getFirestore();
 
   try {
@@ -76,6 +114,8 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
       amountInCents,
       type: data.type,
       uid: request.auth.uid,
+      timestamp: customTimestamp,
+      category,
     });
 
     console.log(

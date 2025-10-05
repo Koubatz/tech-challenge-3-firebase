@@ -257,6 +257,8 @@ Realiza um depósito ou um saque em uma conta bancária existente.
 | :-------- | :------- | :---------- | :--------------------------------------------------------------------- |
 | `amount`  | `number` | Sim         | Valor da transação. Deve ser um número positivo (ex: `100.50`).        |
 | `type`    | `string` | Sim         | Tipo da transação. Valores permitidos: `"DEPOSIT"` ou `"WITHDRAWAL"`. |
+| `timestamp` | `string` ou `number` | Não | Data/hora opcional da transação (ISO 8601 ou epoch em milissegundos). Quando omitido, o horário do servidor é utilizado. |
+| `category` | `string` | Não         | Categoria opcional da transação (máximo de 100 caracteres).            |
 
 **Exemplo de Requisição (Depósito):**
 
@@ -264,7 +266,9 @@ Realiza um depósito ou um saque em uma conta bancária existente.
 {
   "data": {
     "amount": 100.50,
-    "type": "DEPOSIT"
+    "type": "DEPOSIT",
+    "timestamp": "2024-03-15T14:30:00.000Z",
+    "category": "Salário"
   }
 }
 ```
@@ -408,6 +412,7 @@ Busca o histórico de transações de uma conta bancária.
 | `amount`     | `number` | Valor da transação em formato decimal.              |
 | `timestamp`  | `string` | Data e hora da transação em formato ISO 8601.       |
 | `newBalance` | `number` | Saldo da conta *após* esta transação.               |
+| `category`   | `string` ou `null` | Categoria associada à transação, quando informada. |
 
 ---
 

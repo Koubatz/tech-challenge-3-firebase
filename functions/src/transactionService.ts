@@ -1,4 +1,4 @@
-import { FieldValue, Firestore } from 'firebase-admin/firestore';
+import { FieldValue, Firestore, Timestamp } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { TransactionType } from './types';
 
@@ -10,6 +10,8 @@ export interface TransactionDetails {
   amountInCents: number;
   type: TransactionType;
   uid: string;
+  timestamp?: Date;
+  category?: string;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface TransactionDetails {
  * @return Um objeto com o ID da transação e o novo saldo.
  */
 export async function executeTransaction(db: Firestore, details: TransactionDetails) {
-  const { accountNumber, amountInCents, type, uid } = details;
+  const { accountNumber, amountInCents, type, uid, timestamp, category } = details;
   const transactionRef = db.collection('transactions').doc();
 
   const newBalance = await db.runTransaction(async (t) => {
@@ -64,9 +66,10 @@ export async function executeTransaction(db: Firestore, details: TransactionDeta
       amountInCents: amountInCents,
       accountNumber: accountNumber,
       accountId: accountDoc.id,
-      timestamp: FieldValue.serverTimestamp(),
+      timestamp: timestamp ? Timestamp.fromDate(timestamp) : FieldValue.serverTimestamp(),
       newBalanceInCents: newBalanceInCents,
       uid: uid,
+      category: category ?? null,
     });
 
     return newBalanceInCents / 100; // Retorna o saldo em formato decimal.

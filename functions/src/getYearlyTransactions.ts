@@ -89,6 +89,7 @@ export const getYearlyTransactions = onCall(
           amount: (docData.amountInCents || 0) / 100,
           timestamp: transactionDate.toISOString(),
           newBalance: (docData.newBalanceInCents || 0) / 100,
+          category: docData.category ?? null,
         };
 
         const monthTransactions = transactionsByMonth.get(month) ?? [];

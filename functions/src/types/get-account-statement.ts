@@ -1,7 +1,9 @@
 import { TransactionType } from './perform-transaction';
 
 export interface GetAccountStatementData {
-  accountNumber: string;
+  accountNumber?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface Transaction {
@@ -15,4 +17,7 @@ export interface Transaction {
 export interface GetAccountStatementResponse {
   success: boolean;
   transactions: Transaction[];
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
 }

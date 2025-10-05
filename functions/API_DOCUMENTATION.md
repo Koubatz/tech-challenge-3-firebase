@@ -249,22 +249,20 @@ Realiza um depósito ou um saque em uma conta bancária existente.
 
 *   **Nome da Função:** `performTransaction`
 *   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/performTransaction`
-*   **Descrição:** Modifica o saldo de uma conta e registra a transação.
+*   **Descrição:** Modifica o saldo da conta vinculada ao usuário autenticado e registra a transação.
 
 **Requisição (`data`):**
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                              |
-| :-------------- | :------- | :---------- | :--------------------------------------------------------------------- |
-| `accountNumber` | `string` | Sim         | Número da conta que receberá a transação.                              |
-| `amount`        | `number` | Sim         | Valor da transação. Deve ser um número positivo (ex: `100.50`).        |
-| `type`          | `string` | Sim         | Tipo da transação. Valores permitidos: `"DEPOSIT"` ou `"WITHDRAWAL"`. |
+| Parâmetro | Tipo     | Obrigatório | Descrição                                                              |
+| :-------- | :------- | :---------- | :--------------------------------------------------------------------- |
+| `amount`  | `number` | Sim         | Valor da transação. Deve ser um número positivo (ex: `100.50`).        |
+| `type`    | `string` | Sim         | Tipo da transação. Valores permitidos: `"DEPOSIT"` ou `"WITHDRAWAL"`. |
 
 **Exemplo de Requisição (Depósito):**
 
 ```json
 {
   "data": {
-    "accountNumber": "000001-5",
     "amount": 100.50,
     "type": "DEPOSIT"
   }
@@ -292,7 +290,7 @@ Realiza um depósito ou um saque em uma conta bancária existente.
 **Erros Comuns:**
 
 *   `failed-precondition`: Saldo insuficiente para realizar um saque (`WITHDRAWAL`).
-*   `not-found`: A conta (`accountNumber`) não foi encontrada.
+*   `not-found`: Nenhuma conta foi encontrada para o usuário autenticado.
 
 ---
 
@@ -302,21 +300,15 @@ Busca os detalhes de uma conta bancária, incluindo o saldo atual.
 
 *   **Nome da Função:** `getAccountDetails`
 *   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountDetails`
-*   **Descrição:** Retorna informações do titular e o saldo atual da conta.
+*   **Descrição:** Retorna informações do titular e o saldo atual da conta vinculada ao usuário autenticado.
 
-**Requisição (`data`):**
-
-| Parâmetro       | Tipo     | Obrigatório | Descrição                        |
-| :-------------- | :------- | :---------- | :------------------------------- |
-| `accountNumber` | `string` | Sim         | Número da conta a ser consultada. |
+**Requisição (`data`):** Esta função não requer parâmetros. Envie um objeto vazio (`{}`) caso a plataforma exija.
 
 **Exemplo de Requisição:**
 
 ```json
 {
-  "data": {
-    "accountNumber": "000001-5"
-  }
+  "data": {}
 }
 ```
 
@@ -350,20 +342,22 @@ Busca o histórico de transações de uma conta bancária.
 
 *   **Nome da Função:** `getAccountStatement`
 *   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getAccountStatement`
-*   **Descrição:** Retorna uma lista de todas as transações associadas a uma conta, ordenadas da mais recente para a mais antiga.
+*   **Descrição:** Retorna uma lista de todas as transações associadas a uma conta, ordenadas da mais recente para a mais antiga. Apenas o usuário autenticado titular da conta consegue consultar estas informações.
 
 **Requisição (`data`):**
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                             |
-| :-------------- | :------- | :---------- | :------------------------------------ |
-| `accountNumber` | `string` | Sim         | Número da conta para obter o extrato. |
+| Parâmetro  | Tipo     | Obrigatório | Descrição                                                      |
+| :--------- | :------- | :---------- | :------------------------------------------------------------- |
+| `page`     | `number` | Não         | Página a ser retornada (>= 1). Padrão: `1`.                    |
+| `pageSize` | `number` | Não         | Quantidade de registros por página (entre 1 e 50). Padrão: `10`. |
 
 **Exemplo de Requisição:**
 
 ```json
 {
   "data": {
-    "accountNumber": "000001-5"
+    "page": 1,
+    "pageSize": 10
   }
 }
 ```
@@ -374,6 +368,9 @@ Busca o histórico de transações de uma conta bancária.
 {
   "result": {
     "success": true,
+    "page": 1,
+    "pageSize": 10,
+    "hasMore": true,
     "transactions": [
       {
         "id": "uVwXyZaBcDeFgHiJkLmN",
@@ -397,6 +394,9 @@ Busca o histórico de transações de uma conta bancária.
 | Campo          | Tipo            | Descrição                                                                          |
 | :------------- | :-------------- | :--------------------------------------------------------------------------------- |
 | `success`      | `boolean`       | `true` se a consulta foi bem-sucedida.                                             |
+| `page`         | `number`        | Página retornada.                                                                  |
+| `pageSize`     | `number`        | Quantidade de registros solicitada para cada página.                               |
+| `hasMore`      | `boolean`       | Indica se há mais páginas a serem consultadas.                                     |
 | `transactions` | `Array<Object>` | Uma lista de objetos de transação. A lista estará vazia se não houver transações. |
 
 **Estrutura do Objeto de Transação:**

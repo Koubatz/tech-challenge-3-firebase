@@ -1,11 +1,10 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { GetAccountDetailsData, GetAccountDetailsResponse } from './types';
+import { GetAccountDetailsResponse } from './types';
 
 /**
  * Busca os detalhes de uma conta bancária, incluindo o saldo.
- * A função é acionada via HTTPS e espera o seguinte parâmetro:
- * - accountNumber: string (número da conta a ser consultada)
+ * A função é acionada via HTTPS e utiliza o usuário autenticado para localizar a conta.
  *
  * A função retorna um objeto com os seguintes campos em caso de sucesso:
  * - success: boolean
@@ -15,8 +14,6 @@ import { GetAccountDetailsData, GetAccountDetailsResponse } from './types';
  * - balance: number (saldo em formato decimal)
  */
 export const getAccountDetails = onCall(async (request): Promise<GetAccountDetailsResponse> => {
-  const data = request.data as GetAccountDetailsData;
-
   // Verificação de Autenticação
   if (!request.auth) {
     throw new HttpsError(
@@ -25,21 +22,18 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
     );
   }
 
-  // 1. Validação dos dados de entrada.
-  if (!data.accountNumber) {
-    throw new HttpsError('invalid-argument', 'A função deve ser chamada com \'accountNumber\'.');
-  }
+  const uid = request.auth.uid;
 
   const db = getFirestore();
 
   try {
-    // 2. Encontrar a conta bancária pelo número da conta.
+    // 1. Encontrar a conta bancária vinculada ao usuário autenticado.
     const accountsRef = db.collection('bank-accounts');
-    const query = accountsRef.where('accountNumber', '==', data.accountNumber).limit(1);
+    const query = accountsRef.where('uid', '==', uid).limit(1);
     const snapshot = await query.get();
 
     if (snapshot.empty) {
-      throw new HttpsError('not-found', `A conta ${data.accountNumber} não foi encontrada.`);
+      throw new HttpsError('not-found', 'Nenhuma conta foi encontrada para o usuário autenticado.');
     }
 
     const accountDoc = snapshot.docs[0];
@@ -57,7 +51,9 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
       balance: balance,
     };
 
-    console.log(`Consulta para a conta ${data.accountNumber} realizada com sucesso.`);
+    console.log(
+      `Consulta para a conta ${accountData.accountNumber} realizada com sucesso para o usuário ${uid}.`,
+    );
     return response;
   } catch (error) {
     console.error('Erro ao buscar detalhes da conta:', error);

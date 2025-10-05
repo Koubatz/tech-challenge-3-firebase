@@ -1,5 +1,5 @@
 export interface GetAccountDetailsData {
-  accountNumber: string;
+  accountNumber?: string;
 }
 
 export interface GetAccountDetailsResponse {

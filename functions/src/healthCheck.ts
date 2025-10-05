@@ -26,7 +26,9 @@ export const healthCheck = onCall(async (request) => {
     timestamp: FieldValue.serverTimestamp(),
   });
 
-  console.log(`Health check bem-sucedido para o usuário ${request.auth.uid}. Doc ID: ${writeResult.id}`);
+  console.log(
+    `Health check bem-sucedido para o usuário ${request.auth.uid}. Doc ID: ${writeResult.id}`,
+  );
 
   // Retorna sucesso. Erros internos são capturados automaticamente pelo Firebase.
   return { success: true, docId: writeResult.id };

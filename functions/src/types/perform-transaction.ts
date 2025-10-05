@@ -4,7 +4,6 @@ export enum TransactionType {
 }
 
 export interface PerformTransactionData {
-  accountNumber: string;
   amount: number;
   type: TransactionType;
 }

@@ -31,7 +31,7 @@ export const createBankAccount = onCall(async (request) => {
   if (!data.ownerName) {
     throw new HttpsError(
       'invalid-argument',
-      'A função deve ser chamada com o seguinte argumento: \'ownerName\'.',
+      'A função deve ser chamada com o seguinte argumento: ownerName.',
     );
   }
 

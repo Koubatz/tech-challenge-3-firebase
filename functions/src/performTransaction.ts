@@ -5,8 +5,8 @@ import { PerformTransactionData, PerformTransactionResponse, TransactionType } f
 
 /**
  * Realiza uma transação (depósito ou saque) em uma conta bancária.
- * A função é acionada via HTTPS e espera os seguintes parâmetros:
- * - accountNumber: string (número da conta)
+ * A função é acionada via HTTPS e utiliza o usuário autenticado para localizar a conta.
+ * Espera os seguintes parâmetros:
  * - amount: number (valor da transação)
  * - type: "DEPOSIT" | "WITHDRAWAL" (tipo da transação)
  *
@@ -25,40 +25,61 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
   }
 
   const data = request.data as PerformTransactionData;
+  const payload = request.data as PerformTransactionData & { accountNumber?: string };
 
   // 2. Validação dos dados de entrada.
-  if (!data.accountNumber || data.amount == null || !data.type) {
+  if (data.amount == null || !data.type) {
     throw new HttpsError(
       'invalid-argument',
-      'A função deve ser chamada com \'accountNumber\', \'amount\' e \'type\'.',
+      'A função deve ser chamada com amount e type.',
     );
   }
 
-  if (typeof data.amount !== 'number' || data.amount <= 0) {
-    throw new HttpsError('invalid-argument', 'O valor (\'amount\') deve ser um número positivo.');
+  if (typeof data.amount !== 'number' || !Number.isFinite(data.amount) || data.amount <= 0) {
+    throw new HttpsError('invalid-argument', 'O valor (amount) deve ser um número positivo.');
   }
 
   if (data.type !== TransactionType.DEPOSIT && data.type !== TransactionType.WITHDRAWAL) {
     throw new HttpsError(
       'invalid-argument',
-      'O tipo (\'type\') da transação deve ser \'DEPOSIT\' ou \'WITHDRAWAL\'.',
+      'O tipo (type) da transação deve ser DEPOSIT ou WITHDRAWAL.',
     );
   }
 
-  // Para evitar problemas com ponto flutuante, trabalhamos com centavos (inteiros).
-  const amountInCents = Math.round(data.amount * 100);
   const db = getFirestore();
 
   try {
+    // 3. Buscar a conta vinculada ao usuário autenticado.
+    const accountsRef = db.collection('bank-accounts');
+    const accountSnapshot = await accountsRef.where('uid', '==', request.auth.uid).limit(1).get();
+
+    if (accountSnapshot.empty) {
+      throw new HttpsError('not-found', 'Nenhuma conta foi encontrada para o usuário autenticado.');
+    }
+
+    const accountDoc = accountSnapshot.docs[0];
+    const accountData = accountDoc.data();
+    const accountNumber = accountData.accountNumber;
+
+    if (payload.accountNumber && payload.accountNumber !== accountNumber) {
+      throw new HttpsError(
+        'permission-denied',
+        'Você não tem permissão para movimentar a conta informada.',
+      );
+    }
+
+    // Para evitar problemas com ponto flutuante, trabalhamos com centavos (inteiros).
+    const amountInCents = Math.round(data.amount * 100);
+
     const result = await executeTransaction(db, {
-      accountNumber: data.accountNumber,
-      amountInCents: amountInCents,
+      accountNumber,
+      amountInCents,
       type: data.type,
       uid: request.auth.uid,
     });
 
     console.log(
-      `${data.type} de ${data.amount} para a conta ${data.accountNumber} realizado com sucesso.`,
+      `${data.type} de ${data.amount} para a conta ${accountNumber} realizado com sucesso.`,
     );
 
     return {

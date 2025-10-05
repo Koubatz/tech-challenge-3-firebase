@@ -34,6 +34,13 @@ export async function executeTransaction(db: Firestore, details: TransactionDeta
 
     const accountDoc = snapshot.docs[0];
     const accountData = accountDoc.data();
+
+    if (accountData.uid !== uid) {
+      throw new HttpsError(
+        'permission-denied',
+        'Você não tem permissão para movimentar esta conta.',
+      );
+    }
     const currentBalanceInCents = accountData.balanceInCents || 0;
     let newBalanceInCents: number;
 

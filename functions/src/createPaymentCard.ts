@@ -96,6 +96,7 @@ export const createPaymentCard = onCall(async (request): Promise<CreatePaymentCa
   const defaults = getDefaultCardConfig(cardType as PaymentCardType);
 
   await cardRef.set({
+    id: cardRef.id,
     accountId: accountDoc.id,
     accountNumber,
     uid: request.auth.uid,

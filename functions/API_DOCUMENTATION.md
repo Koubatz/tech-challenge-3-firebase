@@ -481,3 +481,218 @@ Retorna todas as transações realizadas pelo usuário autenticado em um ano esp
 *   Apenas a conta vinculada ao usuário autenticado pode ser consultada.
 *   Meses sem transações retornam com o array `transactions` vazio.
 *   É necessário possuir um índice composto no Firestore para `transactions` combinando `accountNumber` e `timestamp`.
+
+---
+
+##### **6. Listar Cartões**
+
+Retorna todos os cartões vinculados à conta bancária do usuário autenticado.
+
+*   **Nome da Função:** `listPaymentCards`
+*   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/listPaymentCards`
+*   **Descrição:** Lista todos os cartões (crédito, débito, físico ou virtual) associados à conta do usuário.
+
+**Requisição (`data`):** Esta função não requer parâmetros. Envie um objeto vazio (`{}`) caso a plataforma exija.
+
+**Resposta de Sucesso (200 OK):**
+
+```json
+{
+  "result": {
+        "success": true,
+        "cards": [
+          {
+            "id": "P1q2W3e4R5t6",
+            "cardType": "CREDIT",
+            "brand": "ByteBank",
+            "label": "Cartão de crédito",
+            "maskedNumber": "**** **** **** 1234",
+            "lastFourDigits": "1234",
+            "invoiceAmount": 0,
+            "invoiceDueDate": "15",
+            "availableLimit": 2500,
+            "creditLimit": 2500,
+            "createdAt": "2024-10-20T12:00:00.000Z",
+            "updatedAt": "2024-10-20T12:00:00.000Z"
+          }
+        ]
+      }
+}
+```
+
+| Campo     | Tipo            | Descrição                                                                 |
+| :-------- | :-------------- | :------------------------------------------------------------------------ |
+| `success` | `boolean`       | `true` quando a listagem é concluída com êxito.                           |
+| `cards`   | `Array<Object>` | Lista de cartões vinculados ao usuário. Pode ser vazia se não houver cartões. |
+
+**Erros Comuns:**
+
+*   `not-found`: Nenhuma conta bancária foi encontrada para o usuário autenticado.
+
+---
+
+##### **7. Criar Cartão**
+
+Cria um novo cartão (crédito, débito, físico ou virtual) vinculado à conta do usuário autenticado.
+
+*   **Nome da Função:** `createPaymentCard`
+*   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/createPaymentCard`
+*   **Descrição:** Gera um novo cartão com dados básicos (número mascarado, limites padrão e fatura inicial zerada). Ao criar um cartão de crédito, algumas transações de exemplo podem ser adicionadas automaticamente para fins de demonstração.
+
+**Requisição (`data`):**
+
+| Parâmetro | Tipo     | Obrigatório | Descrição                                                                              |
+| :-------- | :------- | :---------- | :------------------------------------------------------------------------------------- |
+| `type`    | `string` | Sim         | Tipo do cartão. Valores permitidos: `"CREDIT"`, `"DEBIT"`, `"PHYSICAL"` ou `"VIRTUAL"`. |
+| `label`   | `string` | Não         | Rótulo amigável exibido ao usuário. Máximo de 80 caracteres.                           |
+| `brand`   | `string` | Não         | Marca do cartão (ex.: `"Visa"`). Quando omitido, assume o valor `"ByteBank"`.          |
+
+**Exemplo de Requisição:**
+
+```json
+{
+  "data": {
+    "type": "CREDIT",
+    "label": "Cartão de crédito principal",
+    "brand": "Visa"
+  }
+}
+```
+
+**Resposta de Sucesso (200 OK):**
+
+```json
+{
+  "result": {
+    "success": true,
+    "message": "Cartão criado com sucesso.",
+      "card": {
+        "id": "W7x8Y9z0A1b2",
+        "cardType": "CREDIT",
+        "brand": "Visa",
+        "label": "Cartão de crédito principal",
+        "maskedNumber": "**** **** **** 5678",
+        "lastFourDigits": "5678",
+        "invoiceAmount": 0,
+        "invoiceDueDate": "15",
+        "availableLimit": 2500,
+        "creditLimit": 2500,
+        "createdAt": "2024-10-21T09:30:00.000Z",
+        "updatedAt": "2024-10-21T09:30:00.000Z"
+      }
+    }
+  }
+```
+
+**Erros Comuns:**
+
+*   `unauthenticated`: Usuário não autenticado.
+*   `failed-precondition`: Nenhuma conta bancária encontrada para o usuário.
+*   `invalid-argument`: Tipo inválido ou campos excedendo o tamanho máximo permitido.
+
+---
+
+##### **8. Obter Transações do Cartão**
+
+Retorna as transações mais recentes de um cartão específico.
+
+*   **Nome da Função:** `getPaymentCardTransactions`
+*   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getPaymentCardTransactions`
+*   **Descrição:** Lista as movimentações registradas para o cartão informado, ordenadas da mais recente para a mais antiga.
+
+**Requisição (`data`):**
+
+| Parâmetro | Tipo     | Obrigatório | Descrição                                                      |
+| :-------- | :------- | :---------- | :------------------------------------------------------------- |
+| `cardId`  | `string` | Sim         | ID do cartão retornado pelas funções `listPaymentCards` ou `createPaymentCard`. |
+| `limit`   | `number` | Não         | Quantidade máxima de registros a retornar (1 a 50). Padrão: `20`. |
+
+**Exemplo de Requisição:**
+
+```json
+{
+  "data": {
+    "cardId": "P1q2W3e4R5t6",
+    "limit": 10
+  }
+}
+```
+
+**Resposta de Sucesso (200 OK):**
+
+```json
+{
+  "result": {
+    "success": true,
+    "transactions": [
+      {
+        "id": "Tx123",
+        "type": "CARD",
+        "direction": "DEBIT",
+        "description": "Compra em Mercado Central",
+        "category": "groceries",
+        "amount": 189.99,
+        "timestamp": "2024-10-19T14:20:00.000Z"
+      },
+      {
+        "id": "Tx124",
+        "type": "CARD",
+        "direction": "CREDIT",
+        "description": "Pagamento da fatura",
+        "category": "payment",
+        "amount": 250,
+        "timestamp": "2024-10-16T10:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+**Erros Comuns:**
+
+*   `not-found`: Cartão não encontrado.
+*   `permission-denied`: O cartão não pertence ao usuário autenticado.
+*   `invalid-argument`: Parâmetros inválidos (falta `cardId` ou `limit` fora do intervalo permitido).
+
+---
+
+##### **9. Excluir Cartão**
+
+Remove um cartão existente e todas as transações associadas.
+
+*   **Nome da Função:** `deletePaymentCard`
+*   **URL:** `http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/deletePaymentCard`
+*   **Descrição:** Exclui o cartão pertencente ao usuário autenticado. Todas as transações armazenadas com o mesmo `cardId` são removidas.
+
+**Requisição (`data`):**
+
+| Parâmetro | Tipo     | Obrigatório | Descrição                                      |
+| :-------- | :------- | :---------- | :--------------------------------------------- |
+| `cardId`  | `string` | Sim         | ID do cartão retornado pelas funções de listagem/criação. |
+
+**Exemplo de Requisição:**
+
+```json
+{
+  "data": {
+    "cardId": "DBsyTVIj0NUvHzk1n0SM"
+  }
+}
+```
+
+**Resposta de Sucesso (200 OK):**
+
+```json
+{
+  "result": {
+    "success": true,
+    "removedTransactions": 3
+  }
+}
+```
+
+**Erros Comuns:**
+
+*   `unauthenticated`: Usuário não autenticado.
+*   `not-found`: Cartão inexistente.
+*   `permission-denied`: O cartão pertence a outro usuário.

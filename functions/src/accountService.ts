@@ -46,6 +46,7 @@ const sumPerModule11 = (sum: number): number => {
 export interface EnsureBankAccountParams {
   uid: string;
   ownerName?: string | null;
+  ownerEmail?: string | null;
   allowCreate?: boolean;
 }
 
@@ -58,7 +59,7 @@ export const ensureBankAccountForUser = async (
   db: Firestore,
   params: EnsureBankAccountParams,
 ): Promise<EnsureBankAccountResult> => {
-  const { uid, ownerName, allowCreate = true } = params;
+  const { uid, ownerName, ownerEmail, allowCreate = true } = params;
 
   if (!uid) {
     throw new HttpsError('invalid-argument', 'O identificador do usuário (uid) é obrigatório.');
@@ -82,11 +83,19 @@ export const ensureBankAccountForUser = async (
   }
 
   const normalizedOwnerName = ownerName?.trim();
+  const normalizedOwnerEmail = ownerEmail?.trim().toLowerCase();
 
   if (!normalizedOwnerName) {
     throw new HttpsError(
       'invalid-argument',
       'O nome do titular da conta é obrigatório para criar uma nova conta bancária.',
+    );
+  }
+
+  if (!normalizedOwnerEmail) {
+    throw new HttpsError(
+      'invalid-argument',
+      'O e-mail do titular da conta é obrigatório para criar uma nova conta bancária.',
     );
   }
 
@@ -98,6 +107,7 @@ export const ensureBankAccountForUser = async (
     agency: AGENCY_NUMBER,
     balanceInCents: 0,
     ownerName: normalizedOwnerName,
+    ownerEmail: normalizedOwnerEmail,
     createdAt: now,
     updatedAt: now,
     uid,

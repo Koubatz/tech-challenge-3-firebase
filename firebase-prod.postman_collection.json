@@ -201,7 +201,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"data\": {\n        \"ownerName\": \"Jane Doe\"\n    }\n}",
+						"raw": "{\n    \"data\": {\n        \"ownerName\": \"Jane Doe\",\n        \"ownerEmail\": \"jane.doe@example.com\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

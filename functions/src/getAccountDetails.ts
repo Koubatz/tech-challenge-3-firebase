@@ -11,6 +11,7 @@ import { GetAccountDetailsResponse } from './types';
  * - accountNumber: string
  * - agency: string
  * - ownerName: string
+ * - ownerEmail: string | null
  * - balance: number (saldo em formato decimal)
  */
 export const getAccountDetails = onCall(async (request): Promise<GetAccountDetailsResponse> => {
@@ -48,6 +49,8 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
       accountNumber: accountData.accountNumber,
       agency: accountData.agency,
       ownerName: accountData.ownerName,
+      ownerEmail:
+        typeof accountData.ownerEmail === 'string' ? accountData.ownerEmail : null,
       balance: balance,
     };
 

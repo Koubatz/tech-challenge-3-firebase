@@ -1,5 +1,6 @@
 export interface CreateAccountData {
   ownerName: string;
+  ownerEmail: string;
 }
 
 export interface CreateAccountResponse {

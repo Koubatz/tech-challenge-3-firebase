@@ -7,6 +7,7 @@ import { CreateAccountData, CreateAccountResponse } from './types';
  * Função Cloud Function para criar uma nova conta bancária.
  * A função é acionada via HTTPS e espera o seguinte parâmetro:
  * - ownerName: string (nome do titular da conta)
+ * - ownerEmail: string (email do titular da conta)
  *
  * A função retorna um objeto com os seguintes campos em caso de sucesso:
  * - success: boolean
@@ -36,11 +37,30 @@ export const createBankAccount = onCall(async (request) => {
     );
   }
 
+  if (!data.ownerEmail) {
+    throw new HttpsError(
+      'invalid-argument',
+      'A função deve ser chamada com o seguinte argumento: ownerEmail.',
+    );
+  }
+
+  const trimmedEmail = typeof data.ownerEmail === 'string' ? data.ownerEmail.trim() : '';
+  if (!trimmedEmail) {
+    throw new HttpsError('invalid-argument', 'O campo ownerEmail não pode ser vazio.');
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const normalizedEmail = trimmedEmail.toLowerCase();
+  if (!emailPattern.test(normalizedEmail)) {
+    throw new HttpsError('invalid-argument', 'O campo ownerEmail deve ser um e-mail válido.');
+  }
+
   try {
     const db = getFirestore();
     const { accountDoc, created } = await ensureBankAccountForUser(db, {
       uid: request.auth.uid,
       ownerName: data.ownerName,
+      ownerEmail: normalizedEmail,
       allowCreate: true,
     });
 

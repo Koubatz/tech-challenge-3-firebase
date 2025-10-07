@@ -16,10 +16,13 @@ export const listPaymentCards = onCall(async (request): Promise<ListPaymentCards
       (request.auth.token?.name as string | undefined) ??
       (request.auth.token?.email as string | undefined) ??
       'Cliente';
+    const rawEmail = request.auth.token?.email;
+    const ownerEmailFromToken = typeof rawEmail === 'string' ? rawEmail : undefined;
 
     const { accountDoc } = await ensureBankAccountForUser(db, {
       uid: request.auth.uid,
       ownerName: ownerNameFromToken,
+      ownerEmail: ownerEmailFromToken,
       allowCreate: true,
     });
 

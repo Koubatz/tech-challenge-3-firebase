@@ -65,10 +65,13 @@ export const createPaymentCard = onCall(async (request): Promise<CreatePaymentCa
     (request.auth.token?.email as string | undefined) ??
     payload?.label ??
     'Cliente';
+  const rawEmail = request.auth.token?.email;
+  const ownerEmailFromToken = typeof rawEmail === 'string' ? rawEmail : undefined;
 
   const { accountDoc } = await ensureBankAccountForUser(db, {
     uid: request.auth.uid,
     ownerName: ownerNameFromToken,
+    ownerEmail: ownerEmailFromToken,
     allowCreate: true,
   });
 

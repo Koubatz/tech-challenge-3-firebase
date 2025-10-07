@@ -212,13 +212,15 @@ Cria uma nova conta bancária com um saldo inicial zerado.
 | Parâmetro   | Tipo     | Obrigatório | Descrição                                                              |
 | :---------- | :------- | :---------- | :--------------------------------------------------------------------- |
 | `ownerName` | `string` | Sim         | Nome completo do titular da conta. O saldo inicial será sempre zero.   |
+| `ownerEmail` | `string` | Sim        | Email de contato do titular. Deve ser um endereço de e-mail válido.    |
 
 **Exemplo de Requisição:**
 
 ```json
 {
   "data": {
-    "ownerName": "Jane Doe"
+    "ownerName": "Jane Doe",
+    "ownerEmail": "jane.doe@example.com"
   }
 }
 ```
@@ -325,18 +327,20 @@ Busca os detalhes de uma conta bancária, incluindo o saldo atual.
     "accountNumber": "000001-5",
     "agency": "0001",
     "ownerName": "Jane Doe",
+    "ownerEmail": "jane.doe@example.com",
     "balance": 1601.25
   }
 }
 ```
 
-| Campo           | Tipo      | Descrição                             |
-| :-------------- | :-------- | :------------------------------------ |
-| `success`       | `boolean` | `true` se a consulta foi bem-sucedida. |
-| `accountNumber` | `string`  | Número da conta.                      |
-| `agency`        | `string`  | Número da agência.                    |
-| `ownerName`     | `string`  | Nome do titular.                      |
-| `balance`       | `number`  | Saldo atual em formato decimal.       |
+| Campo           | Tipo           | Descrição                                      |
+| :-------------- | :------------- | :--------------------------------------------- |
+| `success`       | `boolean`      | `true` se a consulta foi bem-sucedida.         |
+| `accountNumber` | `string`       | Número da conta.                               |
+| `agency`        | `string`       | Número da agência.                             |
+| `ownerName`     | `string`       | Nome do titular.                               |
+| `ownerEmail`    | `string/null`  | E-mail de contato cadastrado para o titular.   |
+| `balance`       | `number`       | Saldo atual em formato decimal.                |
 
 ---
 

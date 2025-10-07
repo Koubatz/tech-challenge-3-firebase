@@ -15,18 +15,24 @@ export const deletePaymentCard = onCall(
     }
 
     const db = getFirestore();
-    const cardsSnapshot = await db
-      .collection('payment-cards')
-      .where('id', '==', payload.cardId)
-      .limit(1)
-      .get();
+    let cardRef = db.collection('payment-cards').doc(payload.cardId);
+    let cardSnapshot = await cardRef.get();
 
-    if (cardsSnapshot.empty) {
-      throw new HttpsError('not-found', 'O cartão informado não foi encontrado.');
+    if (!cardSnapshot.exists) {
+      const fallbackSnapshot = await db
+        .collection('payment-cards')
+        .where('uid', '==', request.auth.uid)
+        .where('id', '==', payload.cardId)
+        .limit(1)
+        .get();
+
+      if (fallbackSnapshot.empty) {
+        throw new HttpsError('not-found', 'O cartão informado não foi encontrado.');
+      }
+
+      cardSnapshot = fallbackSnapshot.docs[0];
+      cardRef = cardSnapshot.ref;
     }
-
-    const cardSnapshot = cardsSnapshot.docs[0];
-    const cardRef = cardSnapshot.ref;
 
     const cardData = cardSnapshot.data();
     if (!cardData || cardData.uid !== request.auth.uid) {

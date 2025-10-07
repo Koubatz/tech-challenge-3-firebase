@@ -97,6 +97,8 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
       };
     });
 
+    transactions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
     console.log(
       `Extrato para a conta ${accountNumber} consultado com sucesso. Página ${page}, pageSize ${pageSize}.`,
     );

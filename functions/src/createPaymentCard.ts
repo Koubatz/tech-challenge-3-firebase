@@ -7,11 +7,7 @@ import {
   mapPaymentCard,
 } from './paymentCardService';
 import { ensureBankAccountForUser } from './accountService';
-import {
-  CreatePaymentCardData,
-  CreatePaymentCardResponse,
-  PaymentCardType,
-} from './types';
+import { CreatePaymentCardData, CreatePaymentCardResponse, PaymentCardType } from './types';
 
 const MAX_LABEL_LENGTH = 80;
 const MAX_BRAND_LENGTH = 80;
@@ -38,7 +34,10 @@ const normalizeString = (value?: unknown, maxLength = 100): string | null => {
 
 export const createPaymentCard = onCall(async (request): Promise<CreatePaymentCardResponse> => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'A função deve ser chamada por um usuário autenticado.');
+    throw new HttpsError(
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
+    );
   }
 
   const payload = request.data as CreatePaymentCardData | undefined;

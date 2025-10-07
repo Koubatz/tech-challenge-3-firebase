@@ -1,10 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
 import { mapPaymentCardTransaction } from './paymentCardService';
-import {
-  GetPaymentCardTransactionsData,
-  GetPaymentCardTransactionsResponse,
-} from './types';
+import { GetPaymentCardTransactionsData, GetPaymentCardTransactionsResponse } from './types';
 
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 50;

@@ -49,8 +49,7 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
       accountNumber: accountData.accountNumber,
       agency: accountData.agency,
       ownerName: accountData.ownerName,
-      ownerEmail:
-        typeof accountData.ownerEmail === 'string' ? accountData.ownerEmail : null,
+      ownerEmail: typeof accountData.ownerEmail === 'string' ? accountData.ownerEmail : null,
       balance: balance,
     };
 

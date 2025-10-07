@@ -102,7 +102,9 @@ export const mapPaymentCardTransaction = (
   const normalizedDirection: PaymentCardTransactionDirection | undefined =
     data?.direction === 'DEBIT' || data?.direction === 'CREDIT' ? data.direction : undefined;
   const normalizedTimestamp =
-    timestampToIso(data?.timestamp) ?? doc.createTime?.toDate().toISOString() ?? new Date().toISOString();
+    timestampToIso(data?.timestamp) ??
+    doc.createTime?.toDate().toISOString() ??
+    new Date().toISOString();
 
   return {
     id: doc.id,
@@ -144,9 +146,10 @@ export const generateUniqueCardNumber = async (
   const serialLength = CARD_NUMBER_LENGTH - CARD_NUMBER_PREFIX.length;
   const serial = String(nextValue).padStart(serialLength, '0');
   const combined = `${CARD_NUMBER_PREFIX}${serial}`;
-  const cardNumber = combined.length > CARD_NUMBER_LENGTH
-    ? combined.slice(-CARD_NUMBER_LENGTH)
-    : combined.padStart(CARD_NUMBER_LENGTH, '0');
+  const cardNumber =
+    combined.length > CARD_NUMBER_LENGTH
+      ? combined.slice(-CARD_NUMBER_LENGTH)
+      : combined.padStart(CARD_NUMBER_LENGTH, '0');
   const maskedNumber = formatMaskedCardNumber(cardNumber);
   const lastFourDigits = cardNumber.slice(-4);
 

@@ -29,10 +29,7 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
 
   // 2. Validação dos dados de entrada.
   if (data.amount == null || !data.type) {
-    throw new HttpsError(
-      'invalid-argument',
-      'A função deve ser chamada com amount e type.',
-    );
+    throw new HttpsError('invalid-argument', 'A função deve ser chamada com amount e type.');
   }
 
   if (typeof data.amount !== 'number' || !Number.isFinite(data.amount) || data.amount <= 0) {

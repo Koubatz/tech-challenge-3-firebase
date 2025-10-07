@@ -6,7 +6,10 @@ import { ListPaymentCardsResponse } from './types';
 
 export const listPaymentCards = onCall(async (request): Promise<ListPaymentCardsResponse> => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'A função deve ser chamada por um usuário autenticado.');
+    throw new HttpsError(
+      'unauthenticated',
+      'A função deve ser chamada por um usuário autenticado.',
+    );
   }
 
   const db = getFirestore();

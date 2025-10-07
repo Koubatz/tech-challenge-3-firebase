@@ -46,7 +46,10 @@ export const getYearlyTransactions = onCall(
         .get();
 
       if (accountSnapshot.empty) {
-        throw new HttpsError('not-found', 'Nenhuma conta foi encontrada para o usuário autenticado.');
+        throw new HttpsError(
+          'not-found',
+          'Nenhuma conta foi encontrada para o usuário autenticado.',
+        );
       }
 
       const accountData = accountSnapshot.docs[0].data();
@@ -119,10 +122,7 @@ export const getYearlyTransactions = onCall(
       if (error instanceof HttpsError) {
         throw error;
       }
-      throw new HttpsError(
-        'internal',
-        'Ocorreu um erro interno ao buscar as transações do ano.',
-      );
+      throw new HttpsError('internal', 'Ocorreu um erro interno ao buscar as transações do ano.');
     }
   },
 );

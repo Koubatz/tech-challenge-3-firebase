@@ -1,5 +1,6 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import { ensureBankAccountForUser } from './accountService';
 import { CreateAccountData, CreateAccountResponse } from './types';
 
 /**
@@ -36,45 +37,35 @@ export const createBankAccount = onCall(async (request) => {
   }
 
   try {
-    // 3. Obter o próximo número da conta de forma atômica usando uma transação.
     const db = getFirestore();
-    const counterRef = db.collection('counters').doc('bank-account-counter');
-    const newNumber = await db.runTransaction(async (transaction) => {
-      const counterDoc = await transaction.get(counterRef);
-      const currentNumber = counterDoc.data()?.currentNumber || 0;
-      const nextNumber = currentNumber + 1;
-      transaction.set(counterRef, { currentNumber: nextNumber }, { merge: true });
-      return nextNumber;
-    });
-
-    // 4. Formatar o número da conta com preenchimento e dígito verificador.
-    const baseNumberStr = String(newNumber).padStart(6, '0');
-    const checkDigit = calculateCheckDigit(baseNumberStr);
-    const fullAccountNumber = `${baseNumberStr}-${checkDigit}`;
-
-    // É uma boa prática armazenar valores monetários como inteiros (centavos)
-    // para evitar problemas de precisão com ponto flutuante.
-    const balanceInCents = 0;
-
-    // 5. Criar o novo documento da conta bancária.
-    const writeResult = await db.collection('bank-accounts').add({
-      accountNumber: fullAccountNumber,
-      agency: '0001', // Agência fixa para o banco virtual.
-      balanceInCents: balanceInCents,
-      ownerName: data.ownerName,
-      createdAt: new Date().toISOString(),
+    const { accountDoc, created } = await ensureBankAccountForUser(db, {
       uid: request.auth.uid,
+      ownerName: data.ownerName,
+      allowCreate: true,
     });
 
-    console.log(
-      `Conta bancária ${fullAccountNumber} criada com sucesso com o ID: ${writeResult.id}`,
-    );
+    const accountData = accountDoc.data();
+    if (!accountData) {
+      throw new HttpsError(
+        'internal',
+        'Não foi possível recuperar os dados da conta bancária recém-criada.',
+      );
+    }
 
-    // 6. Retornar uma resposta de sucesso com os dados gerados.
+    if (created) {
+      console.log(
+        `Conta bancária ${accountData.accountNumber} criada com sucesso com o ID: ${accountDoc.id}`,
+      );
+    } else {
+      console.log(
+        `Conta bancária ${accountData.accountNumber} já existia para o usuário ${request.auth.uid}.`,
+      );
+    }
+
     const response: CreateAccountResponse = {
       success: true,
-      docId: writeResult.id,
-      accountNumber: fullAccountNumber,
+      docId: accountDoc.id,
+      accountNumber: accountData.accountNumber,
     };
 
     return response;
@@ -83,38 +74,3 @@ export const createBankAccount = onCall(async (request) => {
     throw new HttpsError('internal', 'Ocorreu um erro interno ao criar a conta bancária.');
   }
 });
-
-function calculateCheckDigit(baseNumber: string): string {
-  const sum = multipleDigitsPerWeight(baseNumber);
-  const validatorDigit = sumPerModule11(sum);
-
-  // Se o resultado for 10 ou 11, o dígito verificador é 0.
-  if (validatorDigit === 10 || validatorDigit >= 10) {
-    return '0';
-  }
-
-  return String(validatorDigit);
-}
-
-function multipleDigitsPerWeight(baseNumber: string): number {
-  let sum = 0;
-  let weight = 2;
-
-  // Multiplica cada dígito pelo seu peso, da direita para a esquerda.
-  for (let i = baseNumber.length - 1; i >= 0; i--) {
-    sum += parseInt(baseNumber.charAt(i), 10) * weight;
-    // O peso vai de 2 a 7 e depois volta para 2.
-    if (weight < 7) {
-      weight++;
-    } else {
-      weight = 2;
-    }
-  }
-
-  return sum;
-}
-
-function sumPerModule11(sum: number): number {
-  const remainder = sum % 11;
-  return 11 - remainder;
-}

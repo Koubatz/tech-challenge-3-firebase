@@ -89,9 +89,9 @@ export const getYearlyTransactions = onCall(
         const transaction: Transaction = {
           id: doc.id,
           type: docData.type,
-          amount: (docData.amountInCents || 0) / 100,
+          amount: docData.amountInCents || 0,
           timestamp: transactionDate.toISOString(),
-          newBalance: (docData.newBalanceInCents || 0) / 100,
+          newBalance: docData.newBalanceInCents || 0,
           category: docData.category ?? null,
         };
 

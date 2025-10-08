@@ -72,7 +72,7 @@ export async function executeTransaction(db: Firestore, details: TransactionDeta
       category: category ?? null,
     });
 
-    return newBalanceInCents / 100; // Retorna o saldo em formato decimal.
+    return newBalanceInCents; // Retorna o saldo em formato decimal.
   });
 
   return {

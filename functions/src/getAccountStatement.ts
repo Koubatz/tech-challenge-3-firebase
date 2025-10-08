@@ -109,10 +109,10 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
       return {
         id: doc.id,
         type: docData.type,
-        amount: (docData.amountInCents || 0) / 100,
+        amount: docData.amountInCents || 0,
         // O timestamp do Firestore precisa ser convertido para uma string ISO.
         timestamp: docData.timestamp.toDate().toISOString(),
-        newBalance: (docData.newBalanceInCents || 0) / 100,
+        newBalance: docData.newBalanceInCents || 0,
         category: docData.category ?? null,
       };
     });

@@ -411,6 +411,186 @@
 				"description": "Busca todas as transações do usuário autenticado para um ano específico e agrupa os resultados por mês."
 			},
 			"response": []
+		},
+		{
+			"name": "List Payment Cards",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/listPaymentCards",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"listPaymentCards"
+					]
+				},
+				"description": "Lista todos os cartões vinculados à conta do usuário autenticado."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Payment Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"type\": \"CREDIT\",\n        \"label\": \"Cartão de crédito principal\",\n        \"brand\": \"Visa\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/createPaymentCard",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"createPaymentCard"
+					]
+				},
+				"description": "Cria um novo cartão vinculado à conta do usuário autenticado. Informe o tipo como CREDIT, DEBIT, PHYSICAL ou VIRTUAL."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Card Transactions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"cardId\": \"<CARD_ID>\",\n        \"limit\": 20\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/getPaymentCardTransactions",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"getPaymentCardTransactions"
+					]
+				},
+				"description": "Busca as transações mais recentes de um cartão específico vinculado ao usuário autenticado."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Payment Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"cardId\": \"<CARD_ID>\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/fiap-tech-challenge-3-bytebank/us-central1/deletePaymentCard",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"fiap-tech-challenge-3-bytebank",
+						"us-central1",
+						"deletePaymentCard"
+					]
+				},
+				"description": "Remove um cartão e as transações associadas pertencentes ao usuário autenticado."
+			},
+			"response": []
 		}
 	],
 	"variable": [

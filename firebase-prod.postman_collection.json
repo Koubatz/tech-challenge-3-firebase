@@ -387,6 +387,170 @@
 				"description": "Busca todas as transações do usuário autenticado para um ano e agrupa os resultados por mês em produção."
 			},
 			"response": []
+		},
+		{
+			"name": "List Payment Cards",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/listPaymentCards",
+					"protocol": "https",
+					"host": [
+						"{{region}}-{{projectId}}",
+						"cloudfunctions",
+						"net"
+					],
+					"path": [
+						"listPaymentCards"
+					]
+				},
+				"description": "Lista todos os cartões vinculados à conta do usuário autenticado em produção."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Payment Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"type\": \"CREDIT\",\n        \"label\": \"Cartão de crédito principal\",\n        \"brand\": \"Visa\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/createPaymentCard",
+					"protocol": "https",
+					"host": [
+						"{{region}}-{{projectId}}",
+						"cloudfunctions",
+						"net"
+					],
+					"path": [
+						"createPaymentCard"
+					]
+				},
+				"description": "Cria um novo cartão vinculado à conta do usuário autenticado em produção. Informe o tipo como CREDIT, DEBIT, PHYSICAL ou VIRTUAL."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Card Transactions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"cardId\": \"<CARD_ID>\",\n        \"limit\": 20\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/getPaymentCardTransactions",
+					"protocol": "https",
+					"host": [
+						"{{region}}-{{projectId}}",
+						"cloudfunctions",
+						"net"
+					],
+					"path": [
+						"getPaymentCardTransactions"
+					]
+				},
+				"description": "Busca as transações mais recentes de um cartão específico pertencente ao usuário autenticado (produção)."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Payment Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"cardId\": \"<CARD_ID>\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{region}}-{{projectId}}.cloudfunctions.net/deletePaymentCard",
+					"protocol": "https",
+					"host": [
+						"{{region}}-{{projectId}}",
+						"cloudfunctions",
+						"net"
+					],
+					"path": [
+						"deletePaymentCard"
+					]
+				},
+				"description": "Remove um cartão e as transações associadas pertencentes ao usuário autenticado (produção)."
+			},
+			"response": []
 		}
 	],
 		"variable": [

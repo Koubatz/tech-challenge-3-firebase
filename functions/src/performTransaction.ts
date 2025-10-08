@@ -103,12 +103,9 @@ export const performTransaction = onCall(async (request): Promise<PerformTransac
       );
     }
 
-    // Para evitar problemas com ponto flutuante, trabalhamos com centavos (inteiros).
-    const amountInCents = Math.round(data.amount * 100);
-
     const result = await executeTransaction(db, {
       accountNumber,
-      amountInCents,
+      amountInCents: data.amount,
       type: data.type,
       uid: request.auth.uid,
       timestamp: customTimestamp,

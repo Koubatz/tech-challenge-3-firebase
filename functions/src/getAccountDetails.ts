@@ -42,15 +42,13 @@ export const getAccountDetails = onCall(async (request): Promise<GetAccountDetai
 
     // 3. Preparar a resposta.
     // Converte o saldo de centavos para formato decimal.
-    const balance = (accountData.balanceInCents || 0) / 100;
-
     const response: GetAccountDetailsResponse = {
       success: true,
       accountNumber: accountData.accountNumber,
       agency: accountData.agency,
       ownerName: accountData.ownerName,
       ownerEmail: typeof accountData.ownerEmail === 'string' ? accountData.ownerEmail : null,
-      balance: balance,
+      balance: accountData.balanceInCents || 0,
     };
 
     console.log(

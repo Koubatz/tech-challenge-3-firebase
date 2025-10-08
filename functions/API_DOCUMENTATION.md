@@ -2,7 +2,19 @@
 
 #### **Introdução**
 
-Esta documentação descreve como interagir com a API de Funções Bancárias baseada em Firebase Cloud Functions. A API fornece endpoints para criar contas bancárias, consultar saldos, visualizar extratos e realizar transações como depósitos e saques.
+Esta documentação descreve como interagir com a API de Funções Bancárias baseada em Firebase Cloud Functions. A API fornece endpoints para criar contas bancárias, consultar saldos, visualizar extratos (com paginação e filtro por tipo de transação), realizar depósitos/saques e gerenciar cartões (listagem, criação, consulta de transações e exclusão).
+
+As funções atualmente disponíveis são:
+- **healthCheck**
+- **createBankAccount**
+- **getAccountDetails**
+- **performTransaction**
+- **getAccountStatement**
+- **getYearlyTransactions**
+- **listPaymentCards**
+- **createPaymentCard**
+- **getPaymentCardTransactions**
+- **deletePaymentCard**
 
 Todas as funções são do tipo "Callable Functions" do Firebase, o que significa que todas as interações são feitas via requisições `POST` HTTPS com um corpo de requisição e resposta padronizado.
 

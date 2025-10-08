@@ -89,12 +89,20 @@ Após a inicialização, você verá os logs dos emuladores no terminal. A API e
 
 ## 📚 Documentação da API
 
-A API possui 5 endpoints principais: `healthCheck`, `createBankAccount`, `performTransaction`, `getAccountDetails` e `getAccountStatement`.
+A API expõe funções para:
+- verificar disponibilidade do serviço (`healthCheck`);
+- criar e consultar contas (`createBankAccount`, `getAccountDetails`);
+- realizar e analisar transações bancárias (`performTransaction`, `getAccountStatement`, `getYearlyTransactions`);
+- gerenciar cartões (`listPaymentCards`, `createPaymentCard`, `getPaymentCardTransactions`, `deletePaymentCard`).
 
-Para uma descrição detalhada de cada endpoint, incluindo exemplos de requisição e resposta, consulte a **Documentação da API**.
+Para uma descrição detalhada de cada função, exemplos de requisição/resposta, parâmetros opcionais (como o filtro de tipo de transação em `getAccountStatement`) e códigos de erro, consulte a **Documentação da API**.
 
 ---
 
 ## 🧪 Testando com Postman
 
-O projeto inclui uma coleção do Postman (`firebase-local.postman_collection.json`) pré-configurada para testar os endpoints no ambiente local. Importe este arquivo no seu Postman para começar a testar imediatamente.
+O projeto inclui duas coleções do Postman:
+- `firebase-local.postman_collection.json` para uso com o Firebase Emulator Suite;
+- `firebase-prod.postman_collection.json` com os mesmos cenários apontando para o ambiente hospedado.
+
+Ambas trazem requisições já configuradas para autenticação, operações bancárias, consultas de extrato (com o parâmetro opcional `transactionType`) e todo o fluxo de cartões. Importe os arquivos no Postman/Insomnia para começar a testar imediatamente.

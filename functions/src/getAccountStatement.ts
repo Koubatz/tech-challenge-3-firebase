@@ -1,6 +1,11 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { GetAccountStatementData, GetAccountStatementResponse, Transaction } from './types';
+import {
+  GetAccountStatementData,
+  GetAccountStatementResponse,
+  Transaction,
+  TransactionType,
+} from './types';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -10,6 +15,7 @@ const MAX_PAGE_SIZE = 50;
  * Busca o extrato (histórico de transações) de uma conta bancária.
  * A função é acionada via HTTPS e utiliza o usuário autenticado para localizar a conta.
  *
+ * Parâmetros opcionais permitem paginação e filtragem por tipo de transação (DEPOSIT/WITHDRAWAL).
  * A função retorna um objeto com os seguintes campos em caso de sucesso:
  * - success: boolean
  * - transactions: Array de transações
@@ -46,6 +52,16 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
   const db = getFirestore();
 
   try {
+    const { transactionType } = data;
+    const validTransactionTypes = [TransactionType.DEPOSIT, TransactionType.WITHDRAWAL] as const;
+
+    if (transactionType && !validTransactionTypes.includes(transactionType)) {
+      throw new HttpsError(
+        'invalid-argument',
+        'O parâmetro transactionType deve ser DEPOSIT ou WITHDRAWAL.',
+      );
+    }
+
     // 2. Garantir que existe uma conta vinculada ao usuário autenticado.
     const accountSnapshot = await db
       .collection('bank-accounts')
@@ -69,9 +85,13 @@ export const getAccountStatement = onCall(async (request): Promise<GetAccountSta
 
     // 3. Buscar as transações para o número da conta, ordenadas por data.
     const transactionsRef = db.collection('transactions');
-    const query = transactionsRef
-      .where('accountNumber', '==', accountNumber)
-      .orderBy('timestamp', 'desc'); // Mais recentes primeiro
+    let query = transactionsRef.where('accountNumber', '==', accountNumber);
+
+    if (transactionType) {
+      query = query.where('type', '==', transactionType);
+    }
+
+    query = query.orderBy('timestamp', 'desc'); // Mais recentes primeiro
 
     const offset = (page - 1) * pageSize;
     // Busca uma página de resultados e um documento adicional para determinar se há próxima página.

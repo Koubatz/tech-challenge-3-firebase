@@ -340,7 +340,7 @@
 				],
 					"body": {
 						"mode": "raw",
-						"raw": "{\n    \"data\": {\n        \"page\": 1,\n        \"pageSize\": 10\n    }\n}",
+						"raw": "{\n    \"data\": {\n        \"page\": 1,\n        \"pageSize\": 10,\n        \"transactionType\": \"DEPOSIT\"\n    }\n}",
 						"options": {
 							"raw": {
 								"language": "json"
@@ -363,7 +363,7 @@
 						"getAccountStatement"
 					]
 					},
-					"description": "Busca o extrato (histórico de transações) da conta vinculada ao usuário autenticado."
+					"description": "Busca o extrato (histórico de transações) da conta vinculada ao usuário autenticado. Informe o campo opcional `transactionType` como `DEPOSIT` ou `WITHDRAWAL` para filtrar o resultado."
 			},
 		"response": []
 		},

@@ -358,6 +358,7 @@ Busca o histórico de transações de uma conta bancária.
 | :--------- | :------- | :---------- | :------------------------------------------------------------- |
 | `page`     | `number` | Não         | Página a ser retornada (>= 1). Padrão: `1`.                    |
 | `pageSize` | `number` | Não         | Quantidade de registros por página (entre 1 e 50). Padrão: `10`. |
+| `transactionType` | `string` | Não         | Filtra por tipo de transação. Valores aceitos: `DEPOSIT` ou `WITHDRAWAL`. |
 
 **Exemplo de Requisição:**
 
@@ -365,10 +366,13 @@ Busca o histórico de transações de uma conta bancária.
 {
   "data": {
     "page": 1,
-    "pageSize": 10
+    "pageSize": 10,
+    "transactionType": "DEPOSIT"
   }
 }
 ```
+
+> Caso `transactionType` não seja informado, o extrato listará todos os tipos de transação.
 
 **Resposta de Sucesso (200 OK):**
 

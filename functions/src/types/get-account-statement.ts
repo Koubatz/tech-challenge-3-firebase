@@ -4,6 +4,7 @@ export interface GetAccountStatementData {
   accountNumber?: string;
   page?: number;
   pageSize?: number;
+  transactionType?: TransactionType;
 }
 
 export interface Transaction {
